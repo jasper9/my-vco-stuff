@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package id="ff808081445d8fb2014483a81dc8006c">
+    <name>org.company.jaas.sous-vide</name>
+    <description/>
+    <workflows>
+        <id-3d0fb3a5-f2b1-4c5f-bb9a-adaab35c170c path="x My Library/Sous Vide SetTarget.workflow.xml"/>
+        <id-7bf11c5b-8f36-4417-9f3f-4c68f3354517 path="x My Library/Pushover Alert.workflow.xml"/>
+        <id-e90ee7c1-368d-4c12-9bf3-6e0a43e69034 path="x My Library/Sous Vide GetStatus.workflow.xml"/>
+        <id-f14b6ab6-dc6a-433c-b708-4382b40ac76c path="x My Library/Sous Vide Master Workflow.workflow.xml"/>
+    </workflows>
+    <actions>
+        <id-b8741dd4-764f-472a-a0e4-442bda2fe07b path="com.vmware.library.http-rest.configuration/getRESTOperationParameterName.action.xml"/>
+    </actions>
+    <configurations/>
+    <resources/>
+</package>

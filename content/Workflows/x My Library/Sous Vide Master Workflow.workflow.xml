@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="f14b6ab6-dc6a-433c-b708-4382b40ac76c" version="0.0.5" api-version="3.1.0" allowed-operations="fve" restartMode="1" resumeFromFailedMode="0">
+    <display-name>Sous Vide Master Workflow</display-name>
+
+    <position x="100.0" y="50.0"/>
+
+    <input>
+        <param name="mode" type="string"/>
+        <param name="set_point" type="number"/>
+    </input>
+
+    <output>
+        <param name="statusCode" type="number">
+            <description>Status code of the HTTP request</description>
+        </param>
+        <param name="contentLength" type="number">
+            <description>Length of the request response</description>
+        </param>
+        <param name="headers" type="Properties">
+            <description>Response headers</description>
+        </param>
+        <param name="contentAsString" type="string">
+            <description>Response content as string</description>
+        </param>
+    </output>
+
+    <attrib name="message" type="string" read-only="false">
+        <value encoded="n">__NULL__</value>
+        <description>Input parameter</description>
+    </attrib>
+    <attrib name="defaultContentType" type="string" read-only="false">
+        <value encoded="n"/>
+        <description>Input content type</description>
+    </attrib>
+    <attrib name="temp" type="number" read-only="false">
+        <value encoded="n">__NULL__</value>
+    </attrib>
+    <attrib name="sleepTime" type="number" read-only="false">
+        <value encoded="n">15.0</value>
+    </attrib>
+    <attrib name="message2" type="string" read-only="false">
+        <value encoded="n"/>
+    </attrib>
+
+    <workflow-item name="item2" out-name="item1" type="link" linked-workflow-id="3d0fb3a5-f2b1-4c5f-bb9a-adaab35c170c">
+        <display-name>Sous Vide SetTarget</display-name>
+
+        <in-binding>
+            <bind name="mode" type="string" export-name="mode"/>
+            <bind name="set_point" type="number" export-name="set_point"/>
+        </in-binding>
+
+        <out-binding>
+            <bind name="message" type="string" export-name="message"/>
+            <bind name="message2" type="string" export-name="message2"/>
+        </out-binding>
+
+        <position x="204.5" y="55.40909090909091"/>
+    </workflow-item>
+
+    <workflow-item name="item3" out-name="item5" type="link" linked-workflow-id="e90ee7c1-368d-4c12-9bf3-6e0a43e69034">
+        <display-name>Sous Vide GetStatus</display-name>
+
+        <in-binding/>
+
+        <out-binding>
+            <bind name="temp" type="number" export-name="temp"/>
+        </out-binding>
+
+        <position x="484.5" y="55.40909090909091"/>
+    </workflow-item>
+
+    <workflow-item name="item1" out-name="item3" type="link" linked-workflow-id="7bf11c5b-8f36-4417-9f3f-4c68f3354517">
+        <display-name>Pushover Alert</display-name>
+
+        <in-binding>
+            <bind name="message" type="string" export-name="message">
+                <description>Input parameter</description>
+            </bind>
+            <bind name="defaultContentType" type="string" export-name="defaultContentType">
+                <description>Input content type</description>
+            </bind>
+        </in-binding>
+
+        <out-binding>
+            <bind name="statusCode" type="number" export-name="statusCode">
+                <description>Status code of the HTTP request</description>
+            </bind>
+            <bind name="contentLength" type="number" export-name="contentLength">
+                <description>Length of the request response</description>
+            </bind>
+            <bind name="headers" type="Properties" export-name="headers">
+                <description>Response headers</description>
+            </bind>
+            <bind name="contentAsString" type="string" export-name="contentAsString">
+                <description>Response content as string</description>
+            </bind>
+        </out-binding>
+
+        <description>Invokes a REST operation.</description>
+
+        <position x="344.5" y="55.40909090909091"/>
+    </workflow-item>
+
+    <workflow-item name="item6" prototype-id="sleep" out-name="item3" content-mode="x" type="task">
+        <display-name>Sleep</display-name>
+
+        <script encoded="false">
+//Auto-generated script
+if ( sleepTime != null )  {
+	System.sleep(sleepTime*1000);
+}
+else  {
+	throw "'sleepTime' is NULL";
+}
+        </script>
+
+        <in-binding>
+            <bind name="sleepTime" type="number" export-name="sleepTime">
+                <description>Time to sleep in seconds</description>
+            </bind>
+        </in-binding>
+
+        <out-binding/>
+
+        <description>Sleep a given number of seconds</description>
+
+        <position x="585.0" y="119.04545454545453"/>
+    </workflow-item>
+
+    <workflow-item name="item4" type="end" end-mode="0">
+        <position x="1084.5" y="45.40909090909091"/>
+    </workflow-item>
+
+    <workflow-item name="item0" out-name="item4" type="link" linked-workflow-id="7bf11c5b-8f36-4417-9f3f-4c68f3354517">
+        <display-name>Pushover Alert</display-name>
+
+        <in-binding>
+            <bind name="message" type="string" export-name="message2">
+                <description>Input parameter</description>
+            </bind>
+            <bind name="defaultContentType" type="string" export-name="defaultContentType">
+                <description>Input content type</description>
+            </bind>
+        </in-binding>
+
+        <out-binding>
+            <bind name="statusCode" type="number" export-name="statusCode">
+                <description>Status code of the HTTP request</description>
+            </bind>
+            <bind name="contentLength" type="number" export-name="contentLength">
+                <description>Length of the request response</description>
+            </bind>
+            <bind name="headers" type="Properties" export-name="headers">
+                <description>Response headers</description>
+            </bind>
+            <bind name="contentAsString" type="string" export-name="contentAsString">
+                <description>Response content as string</description>
+            </bind>
+        </out-binding>
+
+        <description>Invokes a REST operation.</description>
+
+        <position x="904.5" y="55.40909090909091"/>
+    </workflow-item>
+
+    <workflow-item name="item5" out-name="item0" type="custom-condition" alt-out-name="item6">
+        <display-name>Custom decision</display-name>
+
+        <script encoded="false">
+if (temp &lt; set_point)
+   return false
+else 
+   return true
+        </script>
+
+        <in-binding>
+            <bind name="set_point" type="number" export-name="set_point"/>
+            <bind name="temp" type="number" export-name="temp"/>
+        </in-binding>
+
+        <position x="764.5" y="45.40909090909091"/>
+    </workflow-item>
+
+    <presentation>
+        <p-param name="mode">
+            <desc>mode</desc>
+            <p-qual kind="static" name="genericEnumeration" type="Array/string">#{#string#auto#;#string#off#}#</p-qual>
+        </p-param>
+        <p-param name="set_point">
+            <desc>set_point</desc>
+        </p-param>
+    </presentation>
+</workflow>

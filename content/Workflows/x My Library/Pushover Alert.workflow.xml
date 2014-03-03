@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="workflow:name=generic" id="7bf11c5b-8f36-4417-9f3f-4c68f3354517" version="0.0.2" api-version="3.1.0" allowed-operations="fve" restartMode="1" resumeFromFailedMode="0">
+    <display-name>Pushover Alert</display-name>
+
+    <description>Invokes a REST operation.</description>
+
+    <position x="160.0" y="50.0"/>
+
+    <input>
+        <param name="message" type="string">
+            <description>Input parameter</description>
+        </param>
+        <param name="defaultContentType" type="string">
+            <description>Input content type</description>
+        </param>
+    </input>
+
+    <output>
+        <param name="statusCode" type="number">
+            <description>Status code of the HTTP request</description>
+        </param>
+        <param name="contentLength" type="number">
+            <description>Length of the request response</description>
+        </param>
+        <param name="headers" type="Properties">
+            <description>Response headers</description>
+        </param>
+        <param name="contentAsString" type="string">
+            <description>Response content as string</description>
+        </param>
+    </output>
+
+    <attrib name="errorCode" type="string" read-only="false">
+        <value encoded="n"/>
+    </attrib>
+    <attrib name="statusCodeAttribute" type="number" read-only="false"/>
+    <attrib name="token" type="string" read-only="false">
+        <value encoded="n">PUSHOVER_API_TOKEN</value>
+        <description>Input parameter</description>
+    </attrib>
+    <attrib name="user" type="string" read-only="false">
+        <value encoded="n">PUSHOVER_USER_KEY</value>
+        <description>Input parameter</description>
+    </attrib>
+    <attrib name="restOperation" type="REST:RESTOperation" read-only="false">
+        <value encoded="n">dunes://service.dunes.ch/CustomSDKObject?id='03b6de78-29cc-4497-9cc2-752cbea8087e:e1db53bb-c0c0-4746-9ec5-945b9113d01f'&amp;dunesName='REST:RESTOperation'</value>
+        <description>REST operation to be used for the call</description>
+    </attrib>
+    <attrib name="content" type="string" read-only="false">
+        <value encoded="n"/>
+        <description>Input content</description>
+    </attrib>
+
+    <workflow-item name="item0" out-name="item3" catch-name="item2" throw-bind-name="errorCode" type="task">
+        <display-name>REST call</display-name>
+
+        <script encoded="false">
+var inParamtersValues = [token, user, message];
+var request = restOperation.createRequest(inParamtersValues, content);
+//set the request content type
+//defaultContentType = "application/json";
+request.contentType = defaultContentType;
+System.log("Request: " + request);
+System.log("Request URL: " + request.fullUrl);
+var response = request.execute();
+System.log("Response: " + response);
+statusCode = response.statusCode;
+statusCodeAttribute = statusCode;
+System.log("Status code: " + statusCode);
+contentLength = response.contentLength;
+headers = response.getAllHeaders();
+contentAsString = response.contentAsString;
+System.log("Content as string: " + contentAsString);
+        </script>
+
+        <in-binding>
+            <bind name="content" type="string" export-name="content"/>
+            <bind name="token" type="string" export-name="token"/>
+            <bind name="user" type="string" export-name="user"/>
+            <bind name="message" type="string" export-name="message"/>
+            <bind name="defaultContentType" type="string" export-name="defaultContentType"/>
+            <bind name="restOperation" type="REST:RESTOperation" export-name="restOperation"/>
+            <bind name="statusCodeAttribute" type="number" export-name="statusCodeAttribute"/>
+        </in-binding>
+
+        <out-binding>
+            <bind name="statusCode" type="number" export-name="statusCode"/>
+            <bind name="contentLength" type="number" export-name="contentLength"/>
+            <bind name="headers" type="Properties" export-name="headers"/>
+            <bind name="contentAsString" type="string" export-name="contentAsString"/>
+            <bind name="statusCodeAttribute" type="number" export-name="statusCodeAttribute"/>
+        </out-binding>
+
+        <position x="120.0" y="100.0"/>
+    </workflow-item>
+
+    <workflow-item name="item1" type="end" end-mode="0">
+        <position x="160.0" y="230.0"/>
+    </workflow-item>
+
+    <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+        <position x="260.0" y="170.0"/>
+    </workflow-item>
+
+    <workflow-item name="item3" out-name="item1" type="custom-condition" alt-out-name="item2">
+        <display-name>Check status code</display-name>
+
+        <script encoded="false">
+if ( statusCodeAttribute &gt;= 400 ) {
+	throw "HTTPError: status code: " + statusCodeAttribute;
+} else {
+	return true;
+}
+        </script>
+
+        <in-binding>
+            <bind name="statusCodeAttribute" type="number" export-name="statusCodeAttribute"/>
+        </in-binding>
+
+        <position x="120.0" y="170.0"/>
+    </workflow-item>
+
+    <presentation>
+        <p-step>
+            <title>Invoke a REST operation</title>
+            <p-group>
+                <title>Operation</title>
+                <desc>Specify the operation to be invoked.</desc>
+            </p-group>
+            <p-group>
+                <title>Input Parameters</title>
+                <desc>Specify the values of the operation input parameters. Those values will be used to generate the URL.</desc>
+                <p-qual kind="ognl" name="visible" type="boolean">#restOperation != null &amp;&amp; #restOperation.inParametersCount&gt;0</p-qual>
+                <p-param name="message">
+                    <desc>Parameter 3</desc>
+                    <p-qual kind="static" name="mandatory" type="boolean">false</p-qual>
+                    <p-qual kind="ognl" name="visible" type="boolean">#restOperation.inParametersCount&gt;2</p-qual>
+                    <p-qual kind="ognl" name="dataBinding" type="string">"&lt;" + GetAction("com.vmware.library.http-rest.configuration","getRESTOperationParameterName").call( 2.0 , #restOperation ) + "&gt;"</p-qual>
+                </p-param>
+            </p-group>
+            <p-group>
+                <title>Input Content</title>
+                <desc>Specify the operation input content if required.</desc>
+                <p-qual kind="ognl" name="visible" type="boolean">#restOperation != null &amp;&amp; (#restOperation.method=="POST"||#restOperation.method=="PUT")</p-qual>
+                <p-param name="defaultContentType">
+                    <desc>Content type</desc>
+                    <p-qual kind="ognl" name="dataBinding" type="string">#restOperation.defaultContentType</p-qual>
+                </p-param>
+            </p-group>
+        </p-step>
+    </presentation>
+</workflow>

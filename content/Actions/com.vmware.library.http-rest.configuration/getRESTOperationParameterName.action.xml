@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dunes-script-module name="getRESTOperationParameterName" result-type="string" api-version="3.1.0" id="b8741dd4-764f-472a-a0e4-442bda2fe07b" version="1.0.0" allowed-operations="fv">
+    <description>Get the name of operation input parameter by specified index</description>
+
+    <param n="index" t="number">Index of the paramter to return</param>
+
+    <param n="operation" t="REST:RESTOperation">Operation which paramter name should return</param>
+
+    <script encoded="false">
+return operation != null &amp;&amp; operation.inParametersCount &gt; index ? operation.getInParameters()[index] : "";
+    </script>
+</dunes-script-module>

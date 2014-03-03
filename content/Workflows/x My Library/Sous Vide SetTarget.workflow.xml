@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="3d0fb3a5-f2b1-4c5f-bb9a-adaab35c170c" version="0.0.5" api-version="3.1.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+    <display-name>Sous Vide SetTarget</display-name>
+
+    <position x="100.0" y="50.0"/>
+
+    <input>
+        <param name="set_point" type="number"/>
+        <param name="mode" type="string"/>
+    </input>
+
+    <output>
+        <param name="message" type="string"/>
+        <param name="message2" type="string"/>
+    </output>
+
+    <attrib name="restOperation" type="REST:RESTOperation" read-only="false">
+        <value encoded="n">dunes://service.dunes.ch/CustomSDKObject?id='531fafb6-30b8-4984-9614-ddbd7edba6f5:bd90f628-c8dc-4a06-aa41-70b1ed543d4f'&amp;dunesName='REST:RESTOperation'</value>
+    </attrib>
+
+    <workflow-item name="item0" type="end" end-mode="0">
+        <position x="384.5" y="45.40909090909091"/>
+    </workflow-item>
+
+    <workflow-item name="item1" out-name="item0" type="task">
+        <display-name>Set Target</display-name>
+
+        <script encoded="false">
+//'mode=auto&amp;setpoint=199'
+var request = restOperation.createRequest(null, 'mode='+mode+'&amp;setpoint='+setpoint);
+request.contentType = "application/x-www-form-urlencoded";
+System.log("Request: " + request);
+System.log("Request URL: " + request.fullUrl);
+var response = request.execute();
+System.log("Response: " + response);
+message = 'Target has been set to ' + setpoint +'°f.'
+message2 = 'Target temperature of ' + setpoint +'°f has been reached.'
+        </script>
+
+        <in-binding>
+            <bind name="setpoint" type="number" export-name="set_point"/>
+            <bind name="restOperation" type="REST:RESTOperation" export-name="restOperation"/>
+            <bind name="mode" type="string" export-name="mode"/>
+        </in-binding>
+
+        <out-binding>
+            <bind name="message" type="string" export-name="message"/>
+            <bind name="message2" type="string" export-name="message2"/>
+        </out-binding>
+
+        <position x="204.5" y="55.40909090909091"/>
+    </workflow-item>
+
+    <presentation>
+        <p-param name="set_point">
+            <desc>setpoint</desc>
+        </p-param>
+        <p-param name="mode">
+            <desc>mode</desc>
+            <p-qual kind="static" name="genericEnumeration" type="Array/string">#{#string#auto#;#string#off#}#</p-qual>
+        </p-param>
+    </presentation>
+</workflow>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="e90ee7c1-368d-4c12-9bf3-6e0a43e69034" version="0.0.5" api-version="3.1.0" allowed-operations="fve" restartMode="1" resumeFromFailedMode="0">
+    <display-name>Sous Vide GetStatus</display-name>
+
+    <position x="100.0" y="50.0"/>
+
+    <output>
+        <param name="temp" type="number"/>
+    </output>
+
+    <attrib name="restOperation" type="REST:RESTOperation" read-only="false">
+        <value encoded="n">dunes://service.dunes.ch/CustomSDKObject?id='531fafb6-30b8-4984-9614-ddbd7edba6f5:7644c357-4571-4e64-a386-e7fe09058089'&amp;dunesName='REST:RESTOperation'</value>
+    </attrib>
+    <attrib name="set_point" type="string" read-only="false">
+        <value encoded="n"/>
+    </attrib>
+
+    <workflow-item name="item0" type="end" end-mode="0">
+        <position x="384.5" y="45.40909090909091"/>
+    </workflow-item>
+
+    <workflow-item name="item1" out-name="item0" type="task">
+        <display-name>Get Status</display-name>
+
+        <script encoded="false">
+var request = restOperation.createRequest(null, '');
+//request.contentType = defautContentType;
+
+System.log("Request: " + request);
+System.log("Request URL: " + request.fullUrl);
+var response = request.execute();
+System.log("Response: " + response);
+statusCode = response.statusCode;
+statusCodeAttribute = statusCode;
+System.log("Status code: " + statusCode);
+contentLength = response.contentLength;
+headers = response.getAllHeaders();
+contentAsString = response.contentAsString;
+System.log("Content as string: " + contentAsString);
+
+var jsonResponse = JSON.parse(contentAsString);
+temp = jsonResponse.temp;
+set_point = jsonResponse.set_point;
+message = "The current temp is " + temp + ", target is " + set_point + "."
+System.log(message);
+        </script>
+
+        <in-binding>
+            <bind name="restOperation" type="REST:RESTOperation" export-name="restOperation"/>
+        </in-binding>
+
+        <out-binding>
+            <bind name="temp" type="number" export-name="temp"/>
+            <bind name="set_point" type="string" export-name="set_point"/>
+        </out-binding>
+
+        <position x="204.5" y="55.40909090909091"/>
+    </workflow-item>
+
+    <presentation/>
+</workflow>
